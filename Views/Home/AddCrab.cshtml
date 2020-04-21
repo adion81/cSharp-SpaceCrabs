@@ -1,0 +1,20 @@
+@model Crab
+<h2>Add Crab</h2>
+<form asp-action="Crab" class="col-5" method="post">
+    <div class="form-group">
+        <span asp-validation-for="Name"></span>
+        <label asp-for="Name"></label>
+        <input asp-for="Name" class="form-control">
+    </div>
+    <div class="form-group">
+        <span asp-validation-for="Weapon"></span>
+        <label asp-for="Weapon"></label>
+        <input asp-for="Weapon" class="form-control">
+    </div>
+    <div class="form-group">
+        <span asp-validation-for="SpaceCraft"></span>
+        <label asp-for="SpaceCraft"></label>
+        <input asp-for="SpaceCraft" class="form-control">
+    </div>
+    <input type="submit" value="Create Crab" class="btn">
+</form>
