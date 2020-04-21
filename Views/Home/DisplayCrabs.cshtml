@@ -1,43 +1,56 @@
-@model List<Planet>
+@{
+    ViewData["Title"] = "All Crabs";
+}
 
-@foreach( var c in ViewBag.CrabBag)
+@model List<Crab>
+
+@foreach( var c in Model)
 {
     <div class="card">
         <div class="card-header">@c.Name</div>
         <div class="card-body">
             <p>Weapon: @c.Weapon</p>
             <p>SpaceCraft: @c.SpaceCraft</p>
-            <ul class="list-group list-group-flush">
-                @foreach( var t in c.Trips )
-                {
-                    <li class="list-group-item" >@t.Vacation.Name</li>
-                }
-            </ul>
         </div>
-        <div class="card-footer">
-            <h3>Add Trip</h3>
-            <form  action="/trip/@c.CrabId" method="post">
-                <select class="form-control" name="planetId">
-                    @foreach(var p in ViewBag.Planets)
-                    {
-                        bool hasGone = false;
-                        foreach(var t in c.Trips)
+        <div class="row justify-content-center">
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header">Trips</div>
+                    <ul class="list-group list-group-flush">
+                        @foreach( var t in c.Trips )
                         {
-                            if(t.PlanetId == p.PlanetId)
-                            {
-                                hasGone = true;
-                            }
+                            <li class="list-group-item" >
+                                @t.Vacation.Name
+                                <form action="/leave/@t.TripId" class="close" method="post">
+                                    <button class="close">&times;</button>
+                                </form>
+                            </li>
                         }
-                        if(!hasGone)
-                        {
-                            <option  value="@p.PlanetId">@p.Name</option>
-
-                        }
-                    }
-                </select>
-                <input type="submit"  value="Get Trippin'" class="btn btn-danger">
-            </form>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-5">
+                <div class="card">
+                    <div class="card-header">Add Trip</div>
+                    <div class="card-body">
+                        <form class="form-inline" action="/trip/@c.CrabId" method="post">
+                            <select class="form-control col mr-sm-2" name="planetId">
+                                @{
+                                    List<Planet> All = (List<Planet>) ViewBag.Planets;
+                                    List<Planet> BeenThere = c.Trips.Select( t => t.Vacation ).ToList();
+                                    foreach(Planet p in All.Except(BeenThere))
+                                    {
+                                        <option value="@p.PlanetId">@p.Name</option>
+                                    }
+                                }  
+                            </select>
+                            <input type="submit"  value="Get Trippin'" class="btn btn-outline-success">
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+        <br>
     </div>
-
+    <br>
 }

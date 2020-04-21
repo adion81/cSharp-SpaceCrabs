@@ -31,7 +31,7 @@ namespace SpaceCrabs.Controllers
             {
                 _context.Crabs.Add(newCrab);
                 _context.SaveChanges();
-                return RedirectToAction("DisplayCrabs");
+                return Redirect("/");
             }
             else
             {
@@ -46,7 +46,7 @@ namespace SpaceCrabs.Controllers
             {
                 _context.Planets.Add(newPlanet);
                 _context.SaveChanges();
-                return RedirectToAction("AllPlanets");
+                return Redirect("/");
             }
             else
             {
@@ -76,15 +76,40 @@ namespace SpaceCrabs.Controllers
             return RedirectToAction("DisplayCrabs");
         }
 
-        public IActionResult Privacy()
+        [HttpPost("leave/{tripId}")]
+        public IActionResult Leave(int tripId)
         {
-            return View();
+            Trip tripToLeave = _context.Trips.FirstOrDefault(t => t.TripId == tripId);
+            _context.Trips.Remove(tripToLeave);
+            _context.SaveChanges();
+            return RedirectToAction("DisplayCrabs");
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpGet("display/planets")]
+        public IActionResult DisplayPlanets()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(
+                _context.Planets
+                        .Include( p => p.Tours )
+                        .ThenInclude( t => t.Tourist )
+                        .OrderByDescending( p => p.Tours.Count )
+                        .ToList()
+            );
+        }
+
+        [HttpPost("search")]
+        public JsonResult Search(Query data)
+        {
+            List<Planet> planets = new List<Planet>();
+            if(data.query == "all")
+            {
+               planets = _context.Planets.ToList();
+            }
+            else
+            {
+                planets = _context.Planets.Where( p => p.Name.Contains(data.query)).ToList();
+            }
+            return Json(new {planets = planets} );
         }
     }
 }
